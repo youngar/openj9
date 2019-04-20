@@ -35,6 +35,7 @@
 #include "j9modron.h"
 #include "ModronAssertions.h"
 #include "omr.h"
+#include "omrcfg.h"
 #include "VerboseGCInterface.h"
 
 #if defined(J9VM_GC_FINALIZATION)
@@ -43,6 +44,10 @@
 #include "GCExtensions.hpp"
 #include "GlobalCollector.hpp"
 #include "Heap.hpp"
+#include "HeapRegionManager.hpp"
+#if defined(OMR_GC_VLHGC_CONCURRENT_COPY_FORWARD)
+#include "HeapRegionStateTable.hpp"
+#endif /* defined(OMR_GC_VLHGC_CONCURRENT_COPY_FORWARD) */
 #include "MemorySpace.hpp"
 #include "MemorySubSpace.hpp"
 
@@ -317,6 +322,39 @@ j9gc_modron_getConfigurationValueForKey(J9JavaVM *javaVM, UDATA key, void *value
 	case j9gc_modron_configuration_gcThreadCount:
 		*((UDATA *)value) =  extensions->gcThreadCount;
 		keyFound = TRUE;
+		break;
+	case j9gc_modron_configuration_heapBase:
+		if (extensions->isVLHGC()) {
+			*((UDATA *)value) = (UDATA) extensions->heapRegionManager->getFirstTableRegion()->getLowAddress();
+			keyFound = TRUE;
+		} else {
+			*((UDATA *)value) = 0;
+			keyFound = false;
+		}
+		break;
+	case j9gc_modron_configuration_heapRegionShift:
+		if (extensions->isVLHGC()) {
+			*((UDATA *)value) = extensions->heapRegionManager->getRegionShift();
+			keyFound = TRUE;
+		} else {
+			*((UDATA *)value) = 0;
+			keyFound = false;
+		}
+		break;
+	case j9gc_modron_configuration_heapRegionStateTable:
+#if defined(OMR_GC_VLHGC_CONCURRENT_COPY_FORWARD)
+		if (extensions->isVLHGC() && (NULL != extensions->heapRegionStateTable)) {
+			*((UDATA *)value) = (UDATA) extensions->heapRegionStateTable->getTable();
+			keyFound = TRUE;
+		} else {
+			*((UDATA *)value) = 0;
+			keyFound = false;
+		}
+#else /* defined(OMR_GC_VLHGC_CONCURRENT_COPY_FORWARD) */
+		*((UDATA *)value) = 0;
+		keyFound = false;
+#endif /* defined(OMR_GC_VLHGC_CONCURRENT_COPY_FORWARD) */
+
 		break;
 
 	default:
