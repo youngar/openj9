@@ -95,6 +95,9 @@ typedef enum {
 	j9gc_modron_configuration_gcThreadCount,  /* a UDATA representing the MAX number of GC threads being used */
 	j9gc_modron_configuration_objectAlignment, /* a UDATA representing the alignment of the object in heap */
 	j9gc_modron_configuration_compressObjectReferences, /* a UDATA (TRUE or FALSE) representing whether or not object references are compressed */
+	j9gc_modron_configuration_heapBase, /* Return the base of the heap */
+	j9gc_modron_configuration_heapRegionShift, /* a pointer to the base of the region state table */
+	j9gc_modron_configuration_heapRegionStateTable, /* a pointer to the base of the region state table */
 	/* Add new values before this comment */
 	j9gc_modron_configuration_count /* Total number of known configuration keys */
 } J9GCConfigurationKey;
