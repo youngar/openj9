@@ -121,8 +121,10 @@ public:
 	MMINLINE uintptr_t getBytesRemaining() { return (uintptr_t)_endPtr - (uintptr_t)_scanPtr; }
 
 	/**
+	 * Split this instance and set split scan/end pointers to indicate split scan range.
+	 *
 	 * @param env The scanning thread environment
-	 * @param[in] allocSpace pointer to space within which the scanner should be instantiated (in-place)
+	 * @param allocSpace Pointer to memory where split scanner will be instantiated (in-place)
 	 * @param splitAmount The maximum number of array elements to include
 	 * @return Pointer to split scanner in allocSpace
 	 */
